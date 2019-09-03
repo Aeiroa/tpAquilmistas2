@@ -1,0 +1,190 @@
+import nuevoAlquimistas.*
+
+describe "testDelAlquimista"{
+	
+test "Un alquimista tiene criterio si no tiene items de combate" {
+	assert.that(alquimista.tieneCriterio())
+}
+
+test "Un alquimista tiene criterio si tiene items de combate"{
+	alquimista.agregarItemDeCombate(bomba)
+	alquimista.agregarItemDeCombate(pocion)
+	assert.that(alquimista.tieneCriterio())
+}
+
+test "Un alquimista no tiene criterio si tiene items de combate"{
+	bomba.dejarEnCero()
+	pocion.dejarEnCero()
+	alquimista.agregarItemDeCombate(bomba)
+	alquimista.agregarItemDeCombate(pocion)
+	assert.notThat(alquimista.tieneCriterio())
+}
+	
+test "Un alquimista es buen explorador"{
+	alquimista.agregarItemDeRecoleccion(bomba)
+	alquimista.agregarItemDeRecoleccion(pocion)
+	alquimista.agregarItemDeRecoleccion(debilitador)
+	assert.that(alquimista.esBuenExplorador())
+}
+
+test "Un alquimista no es buen explorador sin tener items de recolección"{
+	assert.notThat(alquimista.esBuenExplorador())
+}
+
+test "Un alquimista no es buen explorador teniendo items de recolección"{
+	alquimista.agregarItemDeRecoleccion(bomba)
+	alquimista.agregarItemDeRecoleccion(pocion)
+	assert.notThat(alquimista.esBuenExplorador())
+}
+
+test "Capacidad ofensiva de la bomba"{
+	assert.equals(75,bomba.capacidadOfensiva())
+}
+
+test "Capacidad ofensiva de la poción sin materiales místicos" {
+	pocion.agregarMaterial(material)
+	pocion.agregarMaterial(material)
+	pocion.agregarMaterial(material)
+	assert.equals(60,pocion.capacidadOfensiva())
+}
+
+
+test "Capacidad ofensiva de la poción con materiales místicos"{
+	pocion.agregarMaterial(materialMistico)
+	pocion.agregarMaterial(materialMistico)
+	assert.equals(80,pocion.capacidadOfensiva())
+}
+
+ 
+test "Capacidad ofensiva del debilitador sin materiales místicos"{
+	debilitador.agregarMaterial(material)
+	debilitador.agregarMaterial(material)
+	assert.equals(5,debilitador.capacidadOfensiva())
+}
+
+
+test "Capacidad ofensiva del debilidator con materiales místicos"{
+	debilitador.agregarMaterial(materialMistico)
+	debilitador.agregarMaterial(materialMistico)
+	assert.equals(24,debilitador.capacidadOfensiva())
+}
+ 
+ 
+test "Capacidad ofensiva del alquimista teniendo items de combate"{
+	alquimista.agregarItemDeCombate(bomba) //75
+	pocion.agregarMaterial(materialMistico) 
+	pocion.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(pocion) //70
+	debilitador.agregarMaterial(materialMistico)
+	debilitador.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(debilitador) //12
+
+	assert.equals(157,alquimista.capacidadOfensiva())
+}
+
+
+test "Capacidad ofensiva del alquimista sin items de combate"{
+	assert.equals(0,alquimista.capacidadOfensiva())
+}
+
+
+test "No es profesional porque la calidad promedio de todos sus items es menor a 50"{
+	pocion.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(pocion) //La poción es efectiva
+	bomba.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(bomba) //La bomba es efectiva
+	itemDeRecoleccion.agregarMaterial(material)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	// es buen explorador
+	
+	assert.notThat(alquimista.esProfesional())	
+}
+
+test "No es profesional porque tiene algun item de combate que no es efectivo"{
+	debilitador.agregarMaterial(material)
+	debilitador.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(debilitador)
+	//para que sea buen explorador
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	//para que el promedio sea mayor a 50
+	pocion.agregarMaterial(materialMistico)
+	alquimista.agregarItemDeCombate(pocion) 
+	bomba.agregarMaterial(unBuenMaterial)
+	alquimista.agregarItemDeCombate(bomba) 
+	
+	assert.notThat(alquimista.esProfesional())
+}
+ 
+test "No es profesional porque no es buen explorador"{
+	
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	//para que el promedio sea mayor a 50
+	pocion.agregarMaterial(materialMistico)
+	alquimista.agregarItemDeCombate(pocion) //es efectiva
+	bomba.agregarMaterial(unBuenMaterial)
+	alquimista.agregarItemDeCombate(bomba) //es efectiva
+	
+	
+	assert.notThat(alquimista.esProfesional())
+}
+ 
+test "No es profesional porque no es buen explorador y tiene items no efectivos"{
+	//Para que no sea buen explorador
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	//Para que tenga items no efectivos
+	debilitador.agregarMaterial(material)
+	debilitador.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(debilitador)
+	//para que el promedio sea mayor a 50
+	pocion.agregarMaterial(materialMistico)
+	alquimista.agregarItemDeCombate(pocion) 
+	bomba.agregarMaterial(unBuenMaterial)
+	alquimista.agregarItemDeCombate(bomba) 
+	
+
+ 	assert.notThat(alquimista.esProfesional())
+ 	
+} 
+
+test "No es profesional porque no es buen explorador y la calidad promedio es menor a 50"{
+	pocion.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(pocion) //La poción es efectiva
+	bomba.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(bomba) //La bomba es efectiva
+	
+	assert.notThat(alquimista.esProfesional())
+}
+
+test "No es profesional porque la calidad promedio es menor a 50 y tiene items no efectivos"{
+	//Para que tenga items no efectivos
+	debilitador.agregarMaterial(material)
+	debilitador.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(debilitador)
+	//para que sea buen explorador
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	//calidad promedio menor a 50
+	bomba.agregarMaterial(material)
+	alquimista.agregarItemDeCombate(bomba) //La bomba es efectiva
+	assert.notThat(alquimista.esProfesional())
+}
+
+test "Es profesional"{
+	bomba.agregarMaterial(unBuenMaterial)
+	pocion.agregarMaterial(materialMistico)
+	alquimista.agregarItemDeCombate(bomba)
+	alquimista.agregarItemDeCombate(pocion)
+	//para que sea buen explorador
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	alquimista.agregarItemDeRecoleccion(itemDeRecoleccion)
+	
+	assert.that(alquimista.esProfesional())
+} 
+}
